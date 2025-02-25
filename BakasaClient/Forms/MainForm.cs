@@ -14,6 +14,7 @@ namespace BakasaClient.Forms
         {
             this.Text = $"بكاسة - {AppState.Instance.Name}";
             LoadUserControl(new WelcomeUserControl());
+            this.BackColor = Color.White; // Base background
             //LoadUserControl(new BakesResultsControl("حسن بدري","1$$2$$3$$4"));
         }
         public void LoadUserControl(UserControl userControl)

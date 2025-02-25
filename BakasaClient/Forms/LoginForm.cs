@@ -1,6 +1,7 @@
 ﻿using BakasaClient.Forms;
 using BakasaClient.ServerHandling;
 using BakasaCommon.Commands;
+using System.Drawing.Drawing2D;
 using System.Net.Sockets;
 using System.Text;
 
@@ -14,7 +15,90 @@ namespace BakasaClient
             InitializeComponent();
             this.Icon = new Icon("Resources\\bakasa.ico");
             pbStatus.Invalidate();
+
+            this.BackColor = Color.White; // White background
+            this.FormBorderStyle = FormBorderStyle.None; // Remove default Windows border
+            this.Padding = new Padding(1); // Add slight padding for a custom border
+
+
+            btnConnect.BackColor = Color.FromArgb(0, 122, 204); // Nice blue color
+            btnConnect.ForeColor = Color.White;
+            btnConnect.FlatStyle = FlatStyle.Flat;
+            btnConnect.FlatAppearance.BorderSize = 0;
+            btnConnect.Font = new Font("Tahoma", 10, FontStyle.Bold);
+
+            btnPaste.BackColor = Color.FromArgb(60, 179, 113); // Green color
+            btnPaste.ForeColor = Color.White;
+            btnPaste.FlatStyle = FlatStyle.Flat;
+            btnPaste.FlatAppearance.BorderSize = 0;
+            btnPaste.Font = new Font("Tahoma", 10, FontStyle.Bold);
+            this.FormBorderStyle = FormBorderStyle.None; // Removes ugly Windows border
+            this.Padding = new Padding(1); // Padding for border
+
+            // Paint event to draw a border
+            this.Paint += (s, e) =>
+            {
+                using (Pen pen = new Pen(Color.Gray, 1))
+                {
+                    e.Graphics.DrawRectangle(pen, 0, 0, this.Width - 1, this.Height - 1);
+                }
+            };
+            Button btnExit = new Button();
+            btnExit.Text = "✖";
+            btnExit.Font = new Font("Tahoma", 12, FontStyle.Bold);
+            btnExit.ForeColor = Color.White;
+            btnExit.BackColor = Color.Red;
+            btnExit.FlatStyle = FlatStyle.Flat;
+            btnExit.FlatAppearance.BorderSize = 0;
+            btnExit.Size = new Size(35, 30);
+            btnExit.Location = new Point(this.Width - 40, 5);
+            btnExit.Click += (s, e) => this.Close(); // Close form when clicked
+            this.Controls.Add(btnExit);
+
+
         }
+        #region Form dragging
+        private bool dragging = false;
+        private Point dragCursorPoint;
+        private Point dragFormPoint;
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            base.OnMouseDown(e);
+            dragging = true;
+            dragCursorPoint = Cursor.Position;
+            dragFormPoint = this.Location;
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+            if (dragging)
+            {
+                Point diff = Point.Subtract(Cursor.Position, new Size(dragCursorPoint));
+                this.Location = Point.Add(dragFormPoint, new Size(diff));
+            }
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            base.OnMouseUp(e);
+            dragging = false;
+        }
+        #endregion
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+            GraphicsPath path = new GraphicsPath();
+            int radius = 20; // Corner radius
+            path.AddArc(0, 0, radius, radius, 180, 90);
+            path.AddArc(Width - radius, 0, radius, radius, 270, 90);
+            path.AddArc(Width - radius, Height - radius, radius, radius, 0, 90);
+            path.AddArc(0, Height - radius, radius, radius, 90, 90);
+            path.CloseFigure();
+            this.Region = new Region(path);
+        }
+
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
@@ -118,11 +202,11 @@ namespace BakasaClient
         private void LoginForm_Load(object sender, EventArgs e)
         {
             string[] lines = File.ReadAllLines("settings.txt");
-            if (lines?.Length>0)
+            if (lines?.Length > 0)
             {
-                txtName.Text = lines[0];    
+                txtName.Text = lines[0];
             }
-            if (lines?.Length>1)
+            if (lines?.Length > 1)
             {
                 txtIP.Text = lines[1];
             }

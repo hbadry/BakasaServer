@@ -29,8 +29,6 @@
         private void InitializeComponent()
         {
             lbWelcome = new CustomComponents.CustomLabel();
-            panel1 = new Panel();
-            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // lbWelcome
@@ -39,7 +37,7 @@
             lbWelcome.AutoSize = true;
             lbWelcome.Font = new Font("Tahoma", 12F, FontStyle.Bold);
             lbWelcome.ForeColor = Color.Black;
-            lbWelcome.Location = new Point(225, 63);
+            lbWelcome.Location = new Point(267, 156);
             lbWelcome.Name = "lbWelcome";
             lbWelcome.RightToLeft = RightToLeft.Yes;
             lbWelcome.Size = new Size(99, 19);
@@ -48,30 +46,20 @@
             lbWelcome.TextAlign = ContentAlignment.TopRight;
             lbWelcome.Click += lbWelcome_Click;
             // 
-            // panel1
-            // 
-            panel1.Controls.Add(lbWelcome);
-            panel1.Location = new Point(58, 32);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(543, 248);
-            panel1.TabIndex = 4;
-            // 
             // WelcomeUserControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            Controls.Add(panel1);
+            Controls.Add(lbWelcome);
             Name = "WelcomeUserControl";
             Size = new Size(642, 405);
             Load += WelcomeUserControl_Load;
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
         private CustomComponents.CustomLabel lbWelcome;
-        private Panel panel1;
     }
 }
