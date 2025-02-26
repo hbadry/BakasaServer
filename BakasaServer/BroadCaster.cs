@@ -4,8 +4,10 @@ namespace BakasaServer
 {
     public static class BroadCaster
     {
+        public static string LastCommandToAllPlayers;
         public static async Task BroadcastMessageToAllPlayers(string message, List<Player> players)
         {
+            LastCommandToAllPlayers = message;
             byte[] data = Encoding.UTF8.GetBytes(message);
             foreach (var player in players)
             {
@@ -26,15 +28,10 @@ namespace BakasaServer
         }
         public static async Task BroadcastMessage(string message, Player player)
         {
-            try
-            {
-                byte[] data = Encoding.UTF8.GetBytes(message);
-                await player.Client.GetStream().WriteAsync(data, 0, data.Length);
-            }
-            catch
-            {
-                /* Ignore failed sends (e.g., disconnected clients) */
-            }
+
+            byte[] data = Encoding.UTF8.GetBytes(message);
+            await BroadcastMessage(data, player);
+
         }
     }
 }

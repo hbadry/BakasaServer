@@ -7,11 +7,11 @@ using System.Text;
 class ChatServer
 {
     private static List<Player> _players = new List<Player>();
+    private static List<Player> _disconnectedPlayers = new List<Player> ();
     private static TcpListener _server;
     private static Game _game;
     private const int PORT = 8085; // Change this if needed
 
-    private static bool _gameStarted = false;
 
     static async Task Main()
     {
@@ -35,7 +35,10 @@ class ChatServer
             Console.WriteLine("Please enter a command");
             Console.WriteLine("0 - re-list commands");
             Console.WriteLine("1 - start the game");
-            Console.WriteLine("2 - new round");
+            Console.WriteLine("2 - Send Command To All");
+            Console.WriteLine("3 - Send Command To Player");
+            Console.WriteLine("4 - Show Player Id");
+            Console.WriteLine("5 - Show Last Command To All");
             string choose = Console.ReadLine();
             switch (choose)
             {
@@ -43,7 +46,16 @@ class ChatServer
                     StartGame();
                     break;
                 case "2":
-                    NewRound().GetAwaiter().GetResult();
+                    SendCommandToAll();
+                    break;
+                case "3":
+                    SendCommandToPlayer();
+                    break;
+                case "4":
+                    ShowPlayersIds();
+                    break;
+                case "5":
+                    Console.WriteLine(BroadCaster.LastCommandToAllPlayers);
                     break;
                 case "0":
                     continue;
@@ -61,26 +73,54 @@ class ChatServer
         {
             Console.WriteLine("Must be at least 3 users to play!");
         }
-        if (_gameStarted)
+        if (_game == null)
         {
-            Console.WriteLine("There is already active game running");
+            Task.Run(async () =>
+            {
+                await CreateGame();
+            });
         }
-        Task.Run(async () =>
+        else
         {
-            await CreateGame();
-        });
+            NewRound().GetAwaiter().GetResult();
+        }
+       
 
 
+    }
+    private static void SendCommandToAll()
+    {
+        Console.WriteLine("Enter the command");
+        var command = Console.ReadLine();
+        BroadCaster.BroadcastMessageToAllPlayers(command,_players).GetAwaiter().GetResult();
+    }
+
+    private static void SendCommandToPlayer()
+    {
+        Console.WriteLine("Enter PlayerId");
+        var playerId = Console.ReadLine();
+        while(!_players.Any(x => x.Id == playerId))
+        {
+            Console.WriteLine("Wrong player Id");
+            playerId = Console.ReadLine();
+        }
+        var player = _players.Single(x => x.Id == playerId);
+        Console.WriteLine("Enter the command");
+        var command = Console.ReadLine();
+        BroadCaster.BroadcastMessage(command, player).GetAwaiter().GetResult();
+    }
+    private static void ShowPlayersIds()
+    {
+        foreach(var player in _players)
+        {
+            Console.WriteLine($"{player.DisplayName}: {player.Id}");
+        }
     }
     private async static Task NewRound()
     {
         if (_players?.Where(x => x.Connected)?.Count() < 2)
         {
             Console.WriteLine("Must be at least 3 users to play!");
-        }
-        if (_gameStarted)
-        {
-            Console.WriteLine("There is no game started!");
         }
         var players = _players.Where(x => x.Connected).ToList();
         _game.ActiveRound.IsActiveRound = false;
@@ -112,6 +152,7 @@ class ChatServer
             var client = player.Client;
             using (client)
             {
+                AddPlayerToActiveGameIfAny(player);
                 NetworkStream stream = client.GetStream();
                 byte[] buffer = new byte[1024];
 
@@ -136,10 +177,38 @@ class ChatServer
         finally
         {
             _players.Remove(player);
-            Console.WriteLine("player disconnected.");
+            RemovePlayerFromGame(player);
+            _disconnectedPlayers.Add(player);
+            Console.WriteLine($"{player.DisplayName}: player disconnected.");
         }
     }
 
+    private static async void AddPlayerToActiveGameIfAny(Player player)
+    {
+        if (_game == null) return;
+        _game.PlayerScores.Add(new PlayerScores()
+        {
+            PlayerId = player.Id,
+            Score = 0,
+        });
+        _game.ActiveRound.PlayerRoundData.Add(new PlayerRoundData(player.Id, Round.PlayerStatusMapper[_game.ActiveRound.Stage]));
+    }
 
+    private static void RemovePlayerFromGame(Player player)
+    {
+        if (_game == null)
+            return;
+        _game.PlayerScores = _game.PlayerScores
+            .Where(x => player.Id != x.PlayerId)
+            .ToList();
+        _game.ActiveRound.PlayerRoundData = _game.ActiveRound.PlayerRoundData
+            .Where(x => x.PlayerId != player.Id)
+            .ToList();
+        // In case the disconnected player is the player who is bakes start new round
+        if (_game.ActiveRound.SelectedPlayer.Id == player.Id)
+        {
+            NewRound().GetAwaiter().GetResult();
+        }
 
+    }
 }

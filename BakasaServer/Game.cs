@@ -32,7 +32,7 @@
             Rounds.Add(new Round()
             {
                 IsActiveRound = true,
-                RoundNumber = Rounds.Count +1,
+                RoundNumber = Rounds.Count + 1,
                 SelectedCategory = selectedCategory,
                 SelectedPlayer = selectedPlayer,
                 SelectedItem = selectedItem,
@@ -65,6 +65,14 @@
         public List<PlayerRoundData> PlayerRoundData { get; set; }
         public bool IsActiveRound { get; set; } = true;
         public RoundStage Stage { get; set; }
+        public static Dictionary<RoundStage, PlayerRoundStatus> PlayerStatusMapper = new Dictionary<RoundStage, PlayerRoundStatus>()
+        {
+            {RoundStage.AwaitAllToSeeItem,PlayerRoundStatus.AwaitToSeeItem},
+            {RoundStage.QuestionsStage,PlayerRoundStatus.SawItem },
+            {RoundStage.VoteStage,PlayerRoundStatus.ReadyToVote },
+            {RoundStage.BakesVoteStage,PlayerRoundStatus.ReadyToVote },
+            {RoundStage.Finished,PlayerRoundStatus.Voted },
+        };
 
     }
     public class PlayerRoundData
@@ -81,19 +89,19 @@
     }
     public enum RoundStage
     {
-        AwaitAllToSeeItem=0,
-        QuestionsStage=1,
-        VoteStage=2,
-        BakesVoteStage=3,
-        Finished=4
+        AwaitAllToSeeItem = 0,
+        QuestionsStage = 1,
+        VoteStage = 2,
+        BakesVoteStage = 3,
+        Finished = 4
 
     }
     public enum PlayerRoundStatus
     {
-        AwaitToSeeItem=0,
-        SawItem=1,
-        ReadyToVote=2,
-        Voted=3
+        AwaitToSeeItem = 0,
+        SawItem = 1,
+        ReadyToVote = 2,
+        Voted = 3
 
 
     }

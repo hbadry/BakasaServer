@@ -139,13 +139,15 @@ namespace BakasaServer
             {
                 return;
             }
+            string addedString = " (خطا)";
             if (Command.Parameters[0] == Game.ActiveRound.SelectedItem)
             {
                 Game.PlayerScores.Single(x => x.PlayerId == Caller.Id).Score++;
+                addedString = " (صح)";
             }
             Game.ActiveRound.Stage = RoundStage.Finished;
             string playersWithScore = string.Join("$$", Game.PlayerScores.Select(x => x.PlayerId + "$$" + x.Score));
-            var command = SystemCommands.Server_RoundFinished(Command.Parameters[0], playersWithScore);
+            var command = SystemCommands.Server_RoundFinished(Command.Parameters[0]+ addedString, playersWithScore);
             await BroadCaster.BroadcastMessageToAllPlayers(command, Players);
         }
         private async Task ShowScore()
