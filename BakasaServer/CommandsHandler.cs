@@ -5,6 +5,7 @@ namespace BakasaServer
 {
     public  class CommandsHandler
     {
+        private readonly int maxNumberOfAsk = 12;
         public CommandsHandler(Command command, Player caller, Game game, List<Player> players)
         {
             Command = command;
@@ -64,7 +65,16 @@ namespace BakasaServer
         }
         private async Task QuestionAsked()
         {
-            await SendQuestionToAll();
+            Game.ActiveRound.NumberOfAsk++;
+            if (Game.ActiveRound.NumberOfAsk <= maxNumberOfAsk)
+            {
+                await SendQuestionToAll();
+            }
+            else
+            {
+                await StartReadyToVoteStage();
+            }
+            
         }
 
         private async Task SendQuestionToAll()
@@ -86,15 +96,18 @@ namespace BakasaServer
                 RoundStage.VoteStage;
             if (Game.ActiveRound.Stage == RoundStage.VoteStage)
             {
-                var playerNamesSeperated = string.Join("$$", Players.Select(x => x.DisplayName));
-                var command = SystemCommands.Server_StartVoting(playerNamesSeperated);
-                await BroadCaster.BroadcastMessageToAllPlayers(command, Players);
-            }
-            else
-            {
-                
+                await StartReadyToVoteStage();
             }
         }
+
+        private async Task StartReadyToVoteStage()
+        {
+            Game.ActiveRound.Stage = RoundStage.VoteStage;
+            var playerNamesSeperated = string.Join("$$", Players.Select(x => x.DisplayName));
+            var command = SystemCommands.Server_StartVoting(playerNamesSeperated);
+            await BroadCaster.BroadcastMessageToAllPlayers(command, Players);
+        }
+
         private async Task ClientVoted()
         {
             Game.ActiveRound.PlayerRoundData.Single(x => x.PlayerId == Caller.Id).Status = PlayerRoundStatus.Voted;
@@ -111,6 +124,7 @@ namespace BakasaServer
                 Random rng = new Random();
                 List<string> itemsToSentToBakes = Game.ActiveRound.SelectedCategory.CategoryOptions
                     .OrderBy(_ => rng.Next())
+                    .Where(x=> x!=Game.ActiveRound.SelectedItem)
                     .Take(9)
                     .ToList();
                 itemsToSentToBakes.Add(selectedItem);

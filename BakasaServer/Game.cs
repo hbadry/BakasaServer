@@ -58,6 +58,7 @@
     public class Round
     {
         public int RoundNumber { get; set; }
+        public int NumberOfAsk { get; set; }
         public Category SelectedCategory { get; set; }
         public string SelectedItem { get; set; }
         public Player SelectedPlayer { get; set; }
