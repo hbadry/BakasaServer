@@ -1,4 +1,5 @@
-﻿using BakasaClient.Forms;
+﻿using AutoUpdaterDotNET;
+using BakasaClient.Forms;
 using BakasaClient.ServerHandling;
 using BakasaCommon.Commands;
 using System.Drawing.Drawing2D;
@@ -133,6 +134,7 @@ namespace BakasaClient
                 AppState.Instance.Client = client;
                 StartReceiveTask(client);
                 MessageHelper.ShowInfo("تم الاتصال بنجاح");
+                WriteAllLines();
                 this.DialogResult = DialogResult.OK;
                 this.Hide();
 
@@ -201,6 +203,7 @@ namespace BakasaClient
 
         private void LoginForm_Load(object sender, EventArgs e)
         {
+            AutoUpdater.Start("https://gist.githubusercontent.com/hbadry/e508f050baddb5b5a643676a2c1a3cc6/raw/bakasa_client_auto_updater.xml");
             string[] lines = File.ReadAllLines("settings.txt");
             if (lines?.Length > 0)
             {
@@ -210,8 +213,16 @@ namespace BakasaClient
             {
                 txtIP.Text = lines[1];
             }
-
-
+        }
+        private void WriteAllLines()
+        {
+            try
+            {
+                string[] lines = { txtName.Text, txtIP.Text };
+                File.WriteAllLines("settings.txt", lines);
+            }
+            catch { }
+            
         }
     }
 }
