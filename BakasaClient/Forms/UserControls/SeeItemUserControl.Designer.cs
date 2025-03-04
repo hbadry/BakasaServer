@@ -46,7 +46,7 @@
             // customLabel1
             // 
             customLabel1.AutoSize = true;
-            customLabel1.Font = new Font("Tahoma", 12F, FontStyle.Bold);
+            customLabel1.Font = new Font("Tahoma", 12F, FontStyle.Bold, GraphicsUnit.Point);
             customLabel1.ForeColor = Color.Black;
             customLabel1.Location = new Point(144, 216);
             customLabel1.Name = "customLabel1";
@@ -61,7 +61,7 @@
             btnReady.BackColor = Color.Transparent;
             btnReady.FlatAppearance.BorderSize = 0;
             btnReady.FlatStyle = FlatStyle.Flat;
-            btnReady.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnReady.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
             btnReady.ForeColor = Color.White;
             btnReady.Location = new Point(218, 260);
             btnReady.Name = "btnReady";

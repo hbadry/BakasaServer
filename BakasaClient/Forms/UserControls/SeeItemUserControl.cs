@@ -17,6 +17,7 @@ namespace BakasaClient.Forms.UserControls
         public SeeItemUserControl(string itemName)
         {
             _itemName = itemName;
+            AppState.Instance.CurrentItem = itemName;
             InitializeComponent();
             card.CardFlippedEvent += card_OnCardFlipped;
         }

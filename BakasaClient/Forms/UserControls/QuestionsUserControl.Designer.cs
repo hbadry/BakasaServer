@@ -33,12 +33,13 @@
             btnReadyToVote = new CustomComponents.CustomButton();
             customLabel1 = new CustomComponents.CustomLabel();
             customLabel2 = new CustomComponents.CustomLabel();
+            btnShowWord = new CustomComponents.CustomButton();
             SuspendLayout();
             // 
             // lblText
             // 
             lblText.AutoSize = true;
-            lblText.Font = new Font("Segoe Script", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            lblText.Font = new Font("Segoe Script", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point);
             lblText.ForeColor = Color.IndianRed;
             lblText.Location = new Point(202, 162);
             lblText.Name = "lblText";
@@ -54,9 +55,9 @@
             btnIAsked.Enabled = false;
             btnIAsked.FlatAppearance.BorderSize = 0;
             btnIAsked.FlatStyle = FlatStyle.Flat;
-            btnIAsked.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnIAsked.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
             btnIAsked.ForeColor = Color.White;
-            btnIAsked.Location = new Point(373, 258);
+            btnIAsked.Location = new Point(376, 243);
             btnIAsked.Name = "btnIAsked";
             btnIAsked.Size = new Size(120, 40);
             btnIAsked.TabIndex = 1;
@@ -69,9 +70,9 @@
             btnReadyToVote.BackColor = Color.Transparent;
             btnReadyToVote.FlatAppearance.BorderSize = 0;
             btnReadyToVote.FlatStyle = FlatStyle.Flat;
-            btnReadyToVote.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            btnReadyToVote.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
             btnReadyToVote.ForeColor = Color.White;
-            btnReadyToVote.Location = new Point(86, 258);
+            btnReadyToVote.Location = new Point(86, 243);
             btnReadyToVote.Name = "btnReadyToVote";
             btnReadyToVote.Size = new Size(120, 40);
             btnReadyToVote.TabIndex = 2;
@@ -82,7 +83,7 @@
             // customLabel1
             // 
             customLabel1.AutoSize = true;
-            customLabel1.Font = new Font("Segoe Script", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            customLabel1.Font = new Font("Segoe Script", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point);
             customLabel1.ForeColor = Color.IndianRed;
             customLabel1.Location = new Point(86, 68);
             customLabel1.Name = "customLabel1";
@@ -95,7 +96,7 @@
             // customLabel2
             // 
             customLabel2.AutoSize = true;
-            customLabel2.Font = new Font("Segoe Script", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            customLabel2.Font = new Font("Segoe Script", 12F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point);
             customLabel2.ForeColor = Color.IndianRed;
             customLabel2.Location = new Point(86, 112);
             customLabel2.Name = "customLabel2";
@@ -105,10 +106,26 @@
             customLabel2.Text = "اذا كنت جاهزا للتصويت برجاء الضغط علي جاهز للتصويت";
             customLabel2.TextAlign = ContentAlignment.MiddleRight;
             // 
+            // btnShowWord
+            // 
+            btnShowWord.BackColor = Color.Transparent;
+            btnShowWord.FlatAppearance.BorderSize = 0;
+            btnShowWord.FlatStyle = FlatStyle.Flat;
+            btnShowWord.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            btnShowWord.ForeColor = Color.White;
+            btnShowWord.Location = new Point(236, 243);
+            btnShowWord.Name = "btnShowWord";
+            btnShowWord.Size = new Size(120, 40);
+            btnShowWord.TabIndex = 6;
+            btnShowWord.Text = "إظهار الكلمة";
+            btnShowWord.UseVisualStyleBackColor = false;
+            btnShowWord.Click += btnShowWord_Click;
+            // 
             // QuestionsUserControl
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(btnShowWord);
             Controls.Add(customLabel2);
             Controls.Add(customLabel1);
             Controls.Add(btnReadyToVote);
@@ -128,5 +145,6 @@
         private CustomComponents.CustomButton btnReadyToVote;
         private CustomComponents.CustomLabel customLabel1;
         private CustomComponents.CustomLabel customLabel2;
+        private CustomComponents.CustomButton btnShowWord;
     }
 }

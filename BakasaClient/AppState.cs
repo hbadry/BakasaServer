@@ -1,4 +1,5 @@
 ﻿using BakasaClient.Forms;
+using BakasaClient.Forms.Classes;
 using System.Net.Sockets;
 using System.Text;
 
@@ -15,6 +16,9 @@ namespace BakasaClient
         public int ServerPort { get; set; } = 8085;
 
         public bool ReadyToVote { get; set; } = false;
+        public string CurrentItem { get; set; } = "";
+
+        public UserSettings UserSettings { get; set; }
 
         public TcpClient Client { get; set; }
 

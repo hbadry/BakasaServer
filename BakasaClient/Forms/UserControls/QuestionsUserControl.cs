@@ -55,5 +55,14 @@ namespace BakasaClient.Forms.UserControls
                 btnReadyToVote.Enabled = false;
             }
         }
+
+        private void btnShowWord_Click(object sender, EventArgs e)
+        {
+            new Thread(() =>
+            {
+                MessageHelper.ShowInfo($"{AppState.Instance.CurrentItem}");
+            })
+            { IsBackground = true }.Start();
+        }
     }
 }

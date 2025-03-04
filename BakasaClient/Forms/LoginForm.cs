@@ -1,10 +1,13 @@
 ﻿using AutoUpdaterDotNET;
 using BakasaClient.Forms;
+using BakasaClient.Forms.Classes;
 using BakasaClient.ServerHandling;
 using BakasaCommon.Commands;
 using System.Drawing.Drawing2D;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BakasaClient
 {
@@ -134,7 +137,9 @@ namespace BakasaClient
                 AppState.Instance.Client = client;
                 StartReceiveTask(client);
                 MessageHelper.ShowInfo("تم الاتصال بنجاح");
-                WriteAllLines();
+                AppState.Instance.UserSettings.ServerIp = txtIP.Text;
+                AppState.Instance.UserSettings.PlayerName = txtName.Text;
+                SetUserSettingsFileData(AppState.Instance.UserSettings);
                 this.DialogResult = DialogResult.OK;
                 this.Hide();
 
@@ -204,25 +209,36 @@ namespace BakasaClient
         private void LoginForm_Load(object sender, EventArgs e)
         {
             AutoUpdater.Start("https://gist.githubusercontent.com/hbadry/e508f050baddb5b5a643676a2c1a3cc6/raw/bakasa_client_auto_updater.xml");
-            string[] lines = File.ReadAllLines("settings.txt");
-            if (lines?.Length > 0)
+            string settingsFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "bakasaClient", "settings.json");
+            var userSettings = new UserSettings();
+            if (File.Exists(settingsFilePath))
             {
-                txtName.Text = lines[0];
+                string settings = File.ReadAllText(settingsFilePath);
+                userSettings = JsonSerializer.Deserialize<UserSettings>(settings);
             }
-            if (lines?.Length > 1)
+            else
             {
-                txtIP.Text = lines[1];
+                SetUserSettingsFileData(userSettings);
+
             }
+            AppState.Instance.UserSettings = userSettings;
+            txtName.Text = userSettings.PlayerName;
+            txtIP.Text = userSettings.ServerIp;
         }
-        private void WriteAllLines()
+
+        private static void SetUserSettingsFileData(UserSettings userSettings)
         {
-            try
+            string appFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "bakasaClient");
+
+            // Ensure the directory exists
+            if (!Directory.Exists(appFolder))
             {
-                string[] lines = { txtName.Text, txtIP.Text };
-                File.WriteAllLines("settings.txt", lines);
+                Directory.CreateDirectory(appFolder);
             }
-            catch { }
-            
+
+            string settingsFilePath = Path.Combine(appFolder, "settings.json");
+            File.WriteAllText(settingsFilePath, JsonSerializer.Serialize(userSettings));
         }
+
     }
 }

@@ -7,7 +7,7 @@ using System.Text;
 class ChatServer
 {
     private static List<Player> _players = new List<Player>();
-    private static List<Player> _disconnectedPlayers = new List<Player> ();
+    private static List<DisconnectedPlayer> _disconnectedPlayers = new List<DisconnectedPlayer> ();
     private static TcpListener _server;
     private static Game _game;
     private const int PORT = 8085; // Change this if needed
@@ -167,6 +167,10 @@ class ChatServer
                     var command = CommandProcessor.ProcessCommand(message);
                     var commandHandler = new CommandsHandler(command, player, _game, _players);
                     await commandHandler.Handle();
+                    if (command.Name == CommandsNames.Client_SetName)
+                    {
+                        AttachScoreIfInDisconnectedPlayers(player);
+                    }
                 }
             }
         }
@@ -177,10 +181,26 @@ class ChatServer
         finally
         {
             _players.Remove(player);
-            RemovePlayerFromGame(player);
-            _disconnectedPlayers.Add(player);
+            int score = RemovePlayerFromGame(player);
+            _disconnectedPlayers.Add(new DisconnectedPlayer()
+            {
+                Player = player,
+                Score = score
+            });
             Console.WriteLine($"{player.DisplayName}: player disconnected.");
         }
+    }
+
+    private static void AttachScoreIfInDisconnectedPlayers(Player player)
+    {
+        if (_game == null) return;
+        int disconnectedPlayerScore = _disconnectedPlayers
+            .Where(x => x.Player.PlayerName == player.PlayerName)
+            .OrderByDescending(x => x.Score)
+            .Select(x => x.Score)
+            .FirstOrDefault();
+        _game.PlayerScores.Single(x => x.PlayerId == player.Id).Score = disconnectedPlayerScore;
+
     }
 
     private static async void AddPlayerToActiveGameIfAny(Player player)
@@ -194,10 +214,14 @@ class ChatServer
         _game.ActiveRound.PlayerRoundData.Add(new PlayerRoundData(player.Id, Round.PlayerStatusMapper[_game.ActiveRound.Stage]));
     }
 
-    private static void RemovePlayerFromGame(Player player)
+    private static int RemovePlayerFromGame(Player player)
     {
         if (_game == null)
-            return;
+            return 0;
+        int score = _game.PlayerScores
+            .Where(x => player.Id == x.PlayerId)
+            .Select(x => x.Score)
+            .FirstOrDefault();
         _game.PlayerScores = _game.PlayerScores
             .Where(x => player.Id != x.PlayerId)
             .ToList();
@@ -209,6 +233,7 @@ class ChatServer
         {
             NewRound().GetAwaiter().GetResult();
         }
+        return score;
 
     }
 }
